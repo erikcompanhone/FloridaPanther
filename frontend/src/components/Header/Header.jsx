@@ -1,25 +1,45 @@
-import './Header.css'
+import { Link, useLocation } from 'react-router-dom';
+import './Header.css';
 
-function Header({ selectedTheme, handleThemeSelect }) {
+function Header() {
+  const location = useLocation();
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   return (
-    <>
-      <div className='container'>
-        <div className="leftside">
-          <img alt="logo" src="/panther icon.png" className="logo"></img>
-          <p className="title">Florida Panther Data Analyzer</p>
-        </div>
+    <header className="header">
+      <div className="header-container">
+        <Link to="/" className="header-logo">
+          <span className="logo-icon">🐆</span>
+          <span className="logo-text">Florida Panther Tracker</span>
+        </Link>
 
-        <div className="rightside">
-          <select value={selectedTheme} onChange={handleThemeSelect} className="query-select">
-            <option value="">Select Analysis Theme</option>
-            <option value="mortality">Panther Mortality Analysis</option>
-            <option value="telemetry">Panther Telemetry Data Analysis</option>
-          </select>
-        </div>
+        <nav className="header-nav">
+          <Link
+            to="/"
+            className={`nav-link ${isActive('/') ? 'active' : ''}`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/telemetry"
+            className={`nav-link ${isActive('/telemetry') ? 'active' : ''}`}
+          >
+            Telemetry
+          </Link>
+          <Link
+            to="/mortality"
+            className={`nav-link ${isActive('/mortality') ? 'active' : ''}`}
+          >
+            Mortality
+          </Link>
+        </nav>
       </div>
-    </>
-  )
+    </header>
+  );
 }
 
-export default Header
+export default Header;
+

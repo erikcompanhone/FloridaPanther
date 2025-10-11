@@ -1,187 +1,218 @@
-import './PantherMortality.css'
-import React, { useState } from 'react'
-import BarGraph from '../components/BarGraph/BarGraph.jsx'
-import HeatMap from '../components/heatmap/Heatmap.jsx'
+import './PantherMortality.css';
+import { useState } from 'react';
+import BarGraph from '../components/BarGraph/BarGraph.jsx';
+import MapView from '../components/Map/MapView.jsx';
+import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
+import ErrorMessage from '../components/ui/ErrorMessage.jsx';
+import EmptyState from '../components/ui/EmptyState.jsx';
+import { useApi } from '../hooks/useApi.js';
+import { useFilters } from '../hooks/useFilters.js';
+import { apiService } from '../utils/api.js';
+import { SEX_OPTIONS, FILTER_CONSTRAINTS } from '../utils/constants.js';
 
 function PantherMortality() {
+  const [activeQuery, setActiveQuery] = useState(null);
 
-  const [minYear1, setMinYear1] = useState('');
-  const [maxYear1, setMaxYear1] = useState('');
-  const [sex1, setSex1] = useState('');
-  const [minAge1, setMinAge1] = useState('');
-  const [maxAge1, setMaxAge1] = useState('');
+  // Query 1: Mortality Heatmap
+  const query1Filters = useFilters({
+    minAge1: '',
+    maxAge1: '',
+    sex1: '',
+    minYear1: '',
+    maxYear1: ''
+  });
 
-  const [minAge2, setMinAge2] = useState('');
-  const [maxAge2, setMaxAge2] = useState('');
-  const [sex2, setSex2] = useState('');
+  const query1 = useApi((...args) => apiService.fetchMortalityHeatmap(...args));
 
-  const [data1, setData1] = useState([]);
-  const [data2, setData2] = useState([]);
+  // Query 2: Mortality Causes
+  const query2Filters = useFilters({
+    minAge2: '',
+    maxAge2: '',
+    sex2: ''
+  });
 
-  const handleMinYear1Change = (e) => {
-    setMinYear1(e.target.value)
-  }
+  const query2 = useApi((...args) => apiService.fetchMortalityCauses(...args));
 
-  const handleMaxYear1Change = (e) => {
-    setMaxYear1(e.target.value)
-  }
+  const handleQuery1Submit = async () => {
+    const { minAge1, maxAge1, sex1, minYear1, maxYear1 } = query1Filters.filters;
 
-  const handleMinAge1Change = (e) => {
-    setMinAge1(e.target.value)
-  }
-
-  const handleMaxAge1Change = (e) => {
-    setMaxAge1(e.target.value)
-  }
-
-  const handleSex1Change = (e) => {
-    setSex1(e.target.value)
-  }
-
-  const handleMinAge2Change = (e) => {
-    setMinAge2(e.target.value)
-  }
-
-  const handleMaxAge2Change = (e) => {
-    setMaxAge2(e.target.value)
-  }
-
-  const handleSex2Change = (e) => {
-    setSex2(e.target.value)
-  }
-
-  const handleGo1Click = async () => {
-    if(!minAge1 || !maxAge1 || !sex1 || !minYear1 || !maxYear1) {
-      alert('Please enter all fields.')
-      return
+    if (!query1Filters.validateFilters(['minAge1', 'maxAge1', 'sex1', 'minYear1', 'maxYear1'])) {
+      return;
     }
-    try {
-      const response = await fetch('http://localhost:5000/mortalityQuery1', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({minAge1, maxAge1, sex1, minYear1, maxYear1}),
-      })
-      if (response.ok){
-        const fetchedData1 = await response.json();
-        console.log(fetchedData1);
-        setData1(fetchedData1);
-      } 
+
+    setActiveQuery('query1');
+    await query1.execute(minAge1, maxAge1, sex1, minYear1, maxYear1);
+  };
+
+  const handleQuery2Submit = async () => {
+    const { minAge2, maxAge2, sex2 } = query2Filters.filters;
+
+    if (!query2Filters.validateFilters(['minAge2', 'maxAge2', 'sex2'])) {
+      return;
     }
-    catch (error) {
-      console.log('Error: ', error)
-    }
-  }
-  
-  const handleGo2Click = async () => {
-    if(!minAge2 || !maxAge2 || !sex2) {
-      alert('Please enter all fields.')
-      return
-    }
-    try {
-      const response = await fetch('http://localhost:5000/mortalityQuery2', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({minAge2, maxAge2, sex2}),
-      })
-      if (response.ok){
-        const fetchedData2 = await response.json();
-        setData2(fetchedData2);
-      } 
-    }
-    catch (error) {
-      console.log('Error: ', error)
-    }
-  }
+
+    setActiveQuery('query2');
+    await query2.execute(minAge2, maxAge2, sex2);
+  };
 
   return (
-    <>
-      <div className='componentContent'>
-        <div className='componentTitle'>
-          Mortality Data
-        </div>
+    <div className="mortality-page">
+      <div className="page-header">
+        <h1 className="page-title">Mortality Data Analysis</h1>
+        <p className="page-subtitle">
+          Explore geographic distribution and causes of Florida panther mortality
+        </p>
+      </div>
 
-        <div className='maincontent'>
-          <div className='componentLeftside'>
-            <div className='queryMetadata'>
-              <div className='queryTitle'>
-                Mortality HeatMap
-              </div>
-              <div className='queryDesc'>
-                <p>
-                  Users can analyze the geographic distribution of panther mortalities based on specific age, sex, and year range criteria. By entering a minimum and maximum age, selecting the sex of the panther, and defining a year range, users can retrieve a list of locations where panther deaths have occurred. The results are used to create a heatmap of panther deaths, helping to identify high-risk areas and trends over time.
-                </p>
-              </div>
-            </div>
-            <div className='inputs1'>
-              <input type='number' placeholder='Minimum Age' value={minAge1} onChange={handleMinAge1Change} className='minAge1'/>
-              <input type='number' placeholder='Maximum Age' value={maxAge1} onChange={handleMaxAge1Change} className='maxAge1'/>
-              <input type='number' placeholder='Minimum Year' value={minYear1} onChange={handleMinYear1Change} className='minYear1'/>
-              <input type='number' placeholder='Maximum Year' value={maxYear1} onChange={handleMaxYear1Change} className='maxYear1'/>
-              <select name='sex' value={sex1} onChange={handleSex1Change} className='sex1'>
-                <option value=''>
-                  Sex
-                </option>
-                <option value='Male'>
-                  Male
-                </option>
-                <option value='Female'>
-                  Female
-                </option>
-              </select>
-              <button onClick={handleGo1Click} className='Go1'>
-                Go
-              </button>
-            </div>
-            {data1.length > 0 && (
-              <div className="heatmap">
-                <HeatMap data={data1} />
-              </div>
-            )}
+      <div className="queries-container">
+        {/* Query 1: Mortality Heatmap */}
+        <div className="query-section">
+          <div className="query-header">
+            <h2 className="query-title">📍 Mortality Heatmap</h2>
+            <p className="query-description">
+              Visualize geographic distribution of panther mortality by age, sex, and year range
+            </p>
           </div>
 
-          <div className='componentRightside'>
-            <div className='queryMetadata'>
-              <div className='queryTitle'>
-                Top Mortality Causes
-              </div>
-              <div className='queryDesc'>
-                <p>
-                  Users can explore the causes of panther mortality based on age and sex criteria. By specifying a minimum and maximum age and selecting the sex of the panther, the query returns a ranked list of mortality causes along with the number of deaths attributed to each. The results help identify the most common threats to panthers, providing valuable insights for conservation efforts and risk assessment.
-                </p>
-              </div>
-            </div>
-            <div className='inputs2'>
-              <input type='number' placeholder='Minimum Age' value={minAge2} onChange={handleMinAge2Change} className='minAge2'/>
-              <input type='number' placeholder='Maximum Age' value={maxAge2} onChange={handleMaxAge2Change} className='maxAge2'/>
-              <select name='sex' value={sex2} onChange={handleSex2Change} className='sex2'>
-                <option value=''>
-                  Sex
+          <div className="filters-grid">
+            <input
+              type="number"
+              placeholder="Min Age"
+              value={query1Filters.filters.minAge1}
+              onChange={(e) => query1Filters.updateFilter('minAge1', e.target.value)}
+              className={`filter-input ${query1Filters.errors.minAge1 ? 'error' : ''}`}
+              min={FILTER_CONSTRAINTS.MIN_AGE}
+              max={FILTER_CONSTRAINTS.MAX_AGE}
+            />
+            <input
+              type="number"
+              placeholder="Max Age"
+              value={query1Filters.filters.maxAge1}
+              onChange={(e) => query1Filters.updateFilter('maxAge1', e.target.value)}
+              className={`filter-input ${query1Filters.errors.maxAge1 ? 'error' : ''}`}
+              min={FILTER_CONSTRAINTS.MIN_AGE}
+              max={FILTER_CONSTRAINTS.MAX_AGE}
+            />
+            <input
+              type="number"
+              placeholder="Min Year"
+              value={query1Filters.filters.minYear1}
+              onChange={(e) => query1Filters.updateFilter('minYear1', e.target.value)}
+              className={`filter-input ${query1Filters.errors.minYear1 ? 'error' : ''}`}
+              min={FILTER_CONSTRAINTS.MIN_YEAR}
+              max={FILTER_CONSTRAINTS.MAX_YEAR}
+            />
+            <input
+              type="number"
+              placeholder="Max Year"
+              value={query1Filters.filters.maxYear1}
+              onChange={(e) => query1Filters.updateFilter('maxYear1', e.target.value)}
+              className={`filter-input ${query1Filters.errors.maxYear1 ? 'error' : ''}`}
+              min={FILTER_CONSTRAINTS.MIN_YEAR}
+              max={FILTER_CONSTRAINTS.MAX_YEAR}
+            />
+            <select
+              value={query1Filters.filters.sex1}
+              onChange={(e) => query1Filters.updateFilter('sex1', e.target.value)}
+              className={`filter-select ${query1Filters.errors.sex1 ? 'error' : ''}`}
+            >
+              {SEX_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
-                <option value='Male'>
-                  Male
+              ))}
+            </select>
+            <button
+              onClick={handleQuery1Submit}
+              disabled={query1.loading}
+              className="submit-button"
+            >
+              {query1.loading ? 'Loading...' : 'Generate Map'}
+            </button>
+          </div>
+
+          <div className="result-container">
+            {query1.loading && <LoadingSpinner message="Loading mortality data..." />}
+            {query1.error && <ErrorMessage error={query1.error} onRetry={handleQuery1Submit} />}
+            {!query1.loading && !query1.error && query1.data && query1.data.length === 0 && (
+              <EmptyState
+                icon="🗺️"
+                title="No Data Found"
+                message="Try adjusting your filters to see results."
+              />
+            )}
+            {!query1.loading && !query1.error && query1.data && query1.data.length > 0 && (
+              <MapView data={query1.data} mode="heatmap" />
+            )}
+          </div>
+        </div>
+
+        {/* Query 2: Top Mortality Causes */}
+        <div className="query-section">
+          <div className="query-header">
+            <h2 className="query-title">📊 Top Mortality Causes</h2>
+            <p className="query-description">
+              Analyze leading causes of death by age and sex demographics
+            </p>
+          </div>
+
+          <div className="filters-grid">
+            <input
+              type="number"
+              placeholder="Min Age"
+              value={query2Filters.filters.minAge2}
+              onChange={(e) => query2Filters.updateFilter('minAge2', e.target.value)}
+              className={`filter-input ${query2Filters.errors.minAge2 ? 'error' : ''}`}
+              min={FILTER_CONSTRAINTS.MIN_AGE}
+              max={FILTER_CONSTRAINTS.MAX_AGE}
+            />
+            <input
+              type="number"
+              placeholder="Max Age"
+              value={query2Filters.filters.maxAge2}
+              onChange={(e) => query2Filters.updateFilter('maxAge2', e.target.value)}
+              className={`filter-input ${query2Filters.errors.maxAge2 ? 'error' : ''}`}
+              min={FILTER_CONSTRAINTS.MIN_AGE}
+              max={FILTER_CONSTRAINTS.MAX_AGE}
+            />
+            <select
+              value={query2Filters.filters.sex2}
+              onChange={(e) => query2Filters.updateFilter('sex2', e.target.value)}
+              className={`filter-select ${query2Filters.errors.sex2 ? 'error' : ''}`}
+            >
+              {SEX_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
-                <option value='Female'>
-                  Female
-                </option>
-              </select>
-              <button onClick={handleGo2Click} className='Go2'>
-                Go
-              </button>
-            </div>
-            {data2.length > 0 && (
-              <div className="barGraph">
-                <BarGraph data={data2} />
-              </div>
+              ))}
+            </select>
+            <button
+              onClick={handleQuery2Submit}
+              disabled={query2.loading}
+              className="submit-button"
+            >
+              {query2.loading ? 'Loading...' : 'Analyze Causes'}
+            </button>
+          </div>
+
+          <div className="result-container">
+            {query2.loading && <LoadingSpinner message="Analyzing mortality causes..." />}
+            {query2.error && <ErrorMessage error={query2.error} onRetry={handleQuery2Submit} />}
+            {!query2.loading && !query2.error && query2.data && query2.data.length === 0 && (
+              <EmptyState
+                icon="📊"
+                title="No Data Found"
+                message="Try adjusting your filters to see results."
+              />
+            )}
+            {!query2.loading && !query2.error && query2.data && query2.data.length > 0 && (
+              <BarGraph data={query2.data} />
             )}
           </div>
         </div>
       </div>
-    </>
-  )
+    </div>
+  );
 }
 
-export default PantherMortality
+export default PantherMortality;

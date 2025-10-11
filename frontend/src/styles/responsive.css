@@ -1,0 +1,153 @@
+/* Mobile-first responsive breakpoints */
+
+/* Base mobile styles (320px+) */
+/* Already defined in base styles */
+
+/* Small tablets and large phones (576px+) */
+@media (min-width: 576px) {
+  .container {
+    padding: 0 var(--spacing-xl);
+  }
+
+  h1 { font-size: 2.75rem; }
+  h2 { font-size: 2.25rem; }
+  h3 { font-size: 1.75rem; }
+}
+
+/* Tablets (768px+) */
+@media (min-width: 768px) {
+  html {
+    font-size: 17px;
+  }
+
+  .container {
+    padding: 0 var(--spacing-2xl);
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  /* Show desktop navigation */
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Desktops (1024px+) */
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  /* Side-by-side layouts */
+  .split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+/* Large desktops (1440px+) */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.5rem; }
+}
+
+/* Ultra-wide screens (1920px+) */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+  }
+}
+
+/* Mobile-only utilities */
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Stack items vertically on mobile */
+  .stack-mobile {
+    flex-direction: column;
+  }
+
+  /* Full width on mobile */
+  .full-width-mobile {
+    width: 100% !important;
+  }
+
+  /* Smaller spacing on mobile */
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+
+  /* Touch-friendly buttons */
+  button, .button {
+    min-height: 44px;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  /* Touch-friendly inputs */
+  input, select, textarea {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Print styles */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  @page {
+    margin: 2cm;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+  /* Already dark by default */
+}

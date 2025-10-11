@@ -1,53 +1,165 @@
-.componentContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.mortality-page {
+  padding: var(--spacing-xl) var(--spacing-md);
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.componentTitle {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 50px;
-    font-weight: 500;
-    color: gold;
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
 }
 
-.maincontent {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    width: 80%;
-    margin-top: 20px;
+.page-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
 }
 
-.componentLeftside, .componentRightside {
-    width: 40%;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.page-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
 }
 
-.barGraph {
-    height: 400px;
+.queries-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+}
+
+.query-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.query-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.query-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xs);
+}
+
+.query-description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.filter-input,
+.filter-select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-background);
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-md);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  transition: var(--transition-base);
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.filter-input.error,
+.filter-select.error {
+  border-color: var(--color-error);
+}
+
+.filter-select {
+  cursor: pointer;
+}
+
+.submit-button {
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background: var(--color-primary);
+  color: var(--color-background);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result-container {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .mortality-page {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .page-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .page-subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  .query-section {
+    padding: var(--spacing-lg);
+  }
+
+  .query-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .query-description {
+    font-size: var(--font-size-sm);
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .submit-button {
     width: 100%;
+  }
 }
 
-.minAge1, .maxAge1, .sex1, .minYear1, .maxYear1, .minAge2, .maxAge2, .sex2, .Go2, .Go1 {
-    background-color: black;
-    color: rgb(243, 188, 51);
-}
+@media (max-width: 480px) {
+  .page-title {
+    font-size: var(--font-size-xl);
+  }
 
-.queryMetadata {
-    color:  rgb(248, 191, 48);
-}
-
-.queryTitle {
-    color: gold;
-    font-weight: bold;
-    text-align: center;
-    font-size: 20px;
-}
-
-.queryDesc {
-    font-size: 15px;
+  .query-section {
+    padding: var(--spacing-md);
+  }
 }
