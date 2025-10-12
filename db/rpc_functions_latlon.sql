@@ -85,11 +85,11 @@ $$ LANGUAGE plpgsql;
 
 -- Query 1: Mortality locations heatmap
 CREATE OR REPLACE FUNCTION mortality_query_1(
-  min_age_param numeric DEFAULT NULL,
-  max_age_param numeric DEFAULT NULL,
+  min_age numeric DEFAULT NULL,
+  max_age numeric DEFAULT NULL,
   sex_param text DEFAULT NULL,
-  min_year_param integer DEFAULT NULL,
-  max_year_param integer DEFAULT NULL
+  min_year integer DEFAULT NULL,
+  max_year integer DEFAULT NULL
 )
 RETURNS TABLE (
   panther_id text,
@@ -109,11 +109,11 @@ BEGIN
   FROM mortality m
   JOIN panther p ON m.panther_id = p.panther_id
   WHERE 
-    (min_age_param IS NULL OR p.age >= min_age_param)
-    AND (max_age_param IS NULL OR p.age <= max_age_param)
+    (min_age IS NULL OR p.age >= min_age)
+    AND (max_age IS NULL OR p.age <= max_age)
     AND (sex_param IS NULL OR p.sex = sex_param)
-    AND (min_year_param IS NULL OR m.year >= min_year_param)
-    AND (max_year_param IS NULL OR m.year <= max_year_param)
+    AND (min_year IS NULL OR m.year >= min_year)
+    AND (max_year IS NULL OR m.year <= max_year)
     AND m.latitude IS NOT NULL
     AND m.longitude IS NOT NULL
   ORDER BY m.year DESC, m.panther_id
