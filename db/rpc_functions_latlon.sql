@@ -123,8 +123,9 @@ $$ LANGUAGE plpgsql;
 
 -- Query 2: Mortality counts by cause
 CREATE OR REPLACE FUNCTION mortality_query_2(
-  min_year_param integer DEFAULT NULL,
-  max_year_param integer DEFAULT NULL
+  min_age numeric DEFAULT NULL,
+  max_age numeric DEFAULT NULL,
+  sex_param text DEFAULT NULL
 )
 RETURNS TABLE (
   cause text,
@@ -136,9 +137,11 @@ BEGIN
     m.cause,
     COUNT(*) as cause_count
   FROM mortality m
+  JOIN panther p ON m.panther_id = p.panther_id
   WHERE 
-    (min_year_param IS NULL OR m.year >= min_year_param)
-    AND (max_year_param IS NULL OR m.year <= max_year_param)
+    (min_age IS NULL OR p.age >= min_age)
+    AND (max_age IS NULL OR p.age <= max_age)
+    AND (sex_param IS NULL OR p.sex = sex_param)
     AND m.cause IS NOT NULL
   GROUP BY m.cause
   ORDER BY cause_count DESC;

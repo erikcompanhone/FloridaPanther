@@ -14,7 +14,14 @@ class ApiService {
     }
 
     try {
-      return await callSupabaseRPC('telemetry_query_1', { sex_param: sex });
+      const data = await callSupabaseRPC('telemetry_query_1', { sex_param: sex });
+      console.log('=== TELEMETRY HEATMAP DATA ===');
+      console.log('Total records:', data.length);
+      console.log('First 3 records:', data.slice(0, 3));
+      console.log('Lat range:', Math.min(...data.map(d => d.latitude)), 'to', Math.max(...data.map(d => d.latitude)));
+      console.log('Lon range:', Math.min(...data.map(d => d.longitude)), 'to', Math.max(...data.map(d => d.longitude)));
+      console.log('==============================');
+      return data;
     } catch (error) {
       console.error('Error fetching telemetry heatmap:', error);
       throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
@@ -36,6 +43,11 @@ class ApiService {
         sex_param: sex 
       });
       
+      console.log('=== TELEMETRY TIMELINE DATA ===');
+      console.log('Total records:', data.length);
+      console.log('First 3 records:', data.slice(0, 3));
+      console.log('===============================');
+      
       // Transform snake_case to PascalCase for chart compatibility
       return data.map(row => ({
         Year: row.year,
@@ -56,13 +68,24 @@ class ApiService {
     }
 
     try {
-      return await callSupabaseRPC('mortality_query_1', { 
+      const data = await callSupabaseRPC('mortality_query_1', { 
         min_age: minAge, 
         max_age: maxAge, 
         sex_param: sex,
         min_year: minYear,
         max_year: maxYear
       });
+      
+      console.log('=== MORTALITY HEATMAP DATA ===');
+      console.log('Total records:', data.length);
+      console.log('First 5 records:', data.slice(0, 5));
+      if (data.length > 0) {
+        console.log('Lat range:', Math.min(...data.map(d => d.latitude)), 'to', Math.max(...data.map(d => d.latitude)));
+        console.log('Lon range:', Math.min(...data.map(d => d.longitude)), 'to', Math.max(...data.map(d => d.longitude)));
+      }
+      console.log('==============================');
+      
+      return data;
     } catch (error) {
       console.error('Error fetching mortality heatmap:', error);
       throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
@@ -83,6 +106,11 @@ class ApiService {
         max_age: maxAge, 
         sex_param: sex 
       });
+      
+      console.log('=== MORTALITY CAUSES DATA ===');
+      console.log('Total records:', data.length);
+      console.log('All records:', data);
+      console.log('=============================');
       
       // Transform snake_case to PascalCase for chart compatibility
       return data.map(row => ({

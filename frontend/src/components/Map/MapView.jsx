@@ -58,9 +58,6 @@ function MapUpdater({ data, mode = 'heatmap' }) {
       })
       .filter(Boolean);
 
-    console.log('Raw data sample:', data.slice(0, 2));
-    console.log('Processed data sample:', processedData.slice(0, 2));
-
     if (processedData.length === 0) return;
 
     if (mode === 'heatmap') {
