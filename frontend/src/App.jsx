@@ -15,7 +15,12 @@ import './styles/responsive.css';
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <div className="app">
           <Header />
           <main className="main-content">

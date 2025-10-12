@@ -12,7 +12,12 @@ function Header() {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="header-logo">
-          <span className="logo-icon">🐆</span>
+          <img 
+            src="/panther icon.png" 
+            alt="Panther Icon" 
+            className="logo-icon"
+            style={{ width: '32px', height: '32px' }}
+          />
           <span className="logo-text">Florida Panther Tracker</span>
         </Link>
 

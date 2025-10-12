@@ -1,36 +1,10 @@
-import { API_ENDPOINTS, HTTP_STATUS, ERROR_MESSAGES } from './constants';
+import { callSupabaseRPC } from './supabase';
+import { ERROR_MESSAGES } from './constants';
 
 /**
- * Centralized API utility for making HTTP requests
+ * Centralized API utility for making Supabase RPC calls
  */
 class ApiService {
-  /**
-   * Generic POST request handler
-   */
-  async post(endpoint, data) {
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error.message.includes('Failed to fetch')) {
-        throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
-      }
-      throw error;
-    }
-  }
-
   /**
    * Telemetry Query 1: Top visited locations by sex
    */
@@ -39,7 +13,12 @@ class ApiService {
       throw new Error('Sex parameter is required');
     }
 
-    return this.post(API_ENDPOINTS.TELEMETRY_QUERY_1, { sex1: sex });
+    try {
+      return await callSupabaseRPC('telemetry_query_1', { sex_param: sex });
+    } catch (error) {
+      console.error('Error fetching telemetry heatmap:', error);
+      throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
+    }
   }
 
   /**
@@ -50,11 +29,16 @@ class ApiService {
       throw new Error('All parameters (minAge, maxAge, sex) are required');
     }
 
-    return this.post(API_ENDPOINTS.TELEMETRY_QUERY_2, { 
-      minAge2: minAge, 
-      maxAge2: maxAge, 
-      sex2: sex 
-    });
+    try {
+      return await callSupabaseRPC('telemetry_query_2', { 
+        min_age: minAge, 
+        max_age: maxAge, 
+        sex_param: sex 
+      });
+    } catch (error) {
+      console.error('Error fetching telemetry timeline:', error);
+      throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
+    }
   }
 
   /**
@@ -65,13 +49,18 @@ class ApiService {
       throw new Error('All parameters (minAge, maxAge, sex, minYear, maxYear) are required');
     }
 
-    return this.post(API_ENDPOINTS.MORTALITY_QUERY_1, { 
-      minAge1: minAge, 
-      maxAge1: maxAge, 
-      sex1: sex,
-      minYear1: minYear,
-      maxYear1: maxYear
-    });
+    try {
+      return await callSupabaseRPC('mortality_query_1', { 
+        min_age: minAge, 
+        max_age: maxAge, 
+        sex_param: sex,
+        min_year: minYear,
+        max_year: maxYear
+      });
+    } catch (error) {
+      console.error('Error fetching mortality heatmap:', error);
+      throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
+    }
   }
 
   /**
@@ -82,11 +71,16 @@ class ApiService {
       throw new Error('All parameters (minAge, maxAge, sex) are required');
     }
 
-    return this.post(API_ENDPOINTS.MORTALITY_QUERY_2, { 
-      minAge2: minAge, 
-      maxAge2: maxAge, 
-      sex2: sex 
-    });
+    try {
+      return await callSupabaseRPC('mortality_query_2', { 
+        min_age: minAge, 
+        max_age: maxAge, 
+        sex_param: sex 
+      });
+    } catch (error) {
+      console.error('Error fetching mortality causes:', error);
+      throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
+    }
   }
 }
 

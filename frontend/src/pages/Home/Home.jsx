@@ -5,22 +5,33 @@ function Home() {
   return (
     <div className="home-page">
       <div className="hero-section">
-        <h1 className="hero-title">🐆 Florida Panther Tracker</h1>
+        <h1 className="hero-title">
+          <img 
+            src="/panther icon.png" 
+            alt="Panther Icon" 
+            style={{ width: '48px', height: '48px', marginRight: '12px', verticalAlign: 'middle' }}
+          />
+          Florida Panther Tracker
+        </h1>
         <p className="hero-subtitle">
           Interactive data visualization for Florida panther telemetry and mortality records
         </p>
         <div className="hero-stats">
           <div className="stat-card">
-            <span className="stat-number">40k+</span>
-            <span className="stat-label">Telemetry Records</span>
+            <span className="stat-number">763</span>
+            <span className="stat-label">Panthers Tracked</span>
           </div>
           <div className="stat-card">
-            <span className="stat-number">600+</span>
+            <span className="stat-number">680</span>
             <span className="stat-label">Mortality Records</span>
           </div>
           <div className="stat-card">
-            <span className="stat-number">1949</span>
-            <span className="stat-label">Data Since</span>
+            <span className="stat-number">427</span>
+            <span className="stat-label">Telemetry Points</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-number">75</span>
+            <span className="stat-label">Years of Data</span>
           </div>
         </div>
       </div>
