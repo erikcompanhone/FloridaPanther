@@ -30,11 +30,17 @@ class ApiService {
     }
 
     try {
-      return await callSupabaseRPC('telemetry_query_2', { 
+      const data = await callSupabaseRPC('telemetry_query_2', { 
         min_age: minAge, 
         max_age: maxAge, 
         sex_param: sex 
       });
+      
+      // Transform snake_case to PascalCase for chart compatibility
+      return data.map(row => ({
+        Year: row.year,
+        ObservationCount: row.observation_count
+      }));
     } catch (error) {
       console.error('Error fetching telemetry timeline:', error);
       throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
@@ -72,11 +78,17 @@ class ApiService {
     }
 
     try {
-      return await callSupabaseRPC('mortality_query_2', { 
+      const data = await callSupabaseRPC('mortality_query_2', { 
         min_age: minAge, 
         max_age: maxAge, 
         sex_param: sex 
       });
+      
+      // Transform snake_case to PascalCase for chart compatibility
+      return data.map(row => ({
+        Cause: row.cause,
+        CauseCount: row.cause_count
+      }));
     } catch (error) {
       console.error('Error fetching mortality causes:', error);
       throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
