@@ -6,10 +6,10 @@ Converts State Plane Florida East (feet) to WGS84 lat/lon.
 import sys
 from pyproj import Transformer
 
-# Create transformer from State Plane Florida East (feet) to WGS84
-# EPSG:2236 = NAD83 / Florida East (US Survey feet)
+# Create transformer from State Plane Florida East (NAD83 HARN, US Survey feet) to WGS84
+# EPSG:3087 = NAD83(HARN) / Florida GDL Albers (meters)
 # EPSG:4326 = WGS84 (latitude, longitude)
-transformer = Transformer.from_crs("EPSG:2236", "EPSG:4326", always_xy=True)
+transformer = Transformer.from_crs("EPSG:3087", "EPSG:4326", always_xy=True)
 
 def convert_stateplane_to_latlon(x, y):
     """
