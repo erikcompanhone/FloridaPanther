@@ -29,9 +29,24 @@ function MapUpdater({ data, mode = 'heatmap' }) {
       clusterLayerRef.current = null;
     }
 
-    // Process data
+    // Process data - coordinates are now latitude/longitude from database
     const processedData = data
       .map(point => {
+        // Check for latitude/longitude fields first, then fallback to X/Y
+        const lat = point.latitude || point.Latitude;
+        const lon = point.longitude || point.Longitude;
+        
+        // If we have lat/lon directly, use them
+        if (lat && lon) {
+          return {
+            ...point,
+            lat: parseFloat(lat),
+            lon: parseFloat(lon),
+            intensity: point.VisitCount || point.visit_count || point.CauseCount || point.cause_count || 1
+          };
+        }
+        
+        // Fallback to X/Y with projection (for old data)
         const coords = projectToLatLon(point.X || point.x, point.Y || point.y);
         if (!coords) return null;
         return {

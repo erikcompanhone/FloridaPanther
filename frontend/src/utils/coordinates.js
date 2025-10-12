@@ -28,22 +28,23 @@ export function isValidCoordinate(x, y) {
 }
 
 /**
- * Convert projected coordinates to lat/lon
- * Florida Panther data uses State Plane Florida East in US Survey Feet (EPSG:2236)
- * X values around 600,000-700,000 feet, Y values around 200,000-300,000 feet
+ * Convert coordinates to lat/lon
+ * Data is now stored as latitude/longitude in the database
  */
 export function projectToLatLon(x, y) {
   try {
-    // If coordinates are already in lat/lon range, return as-is
-    if (Math.abs(x) <= 180 && Math.abs(y) <= 90) {
-      return [parseFloat(y), parseFloat(x)]; // [lat, lon]
+    // Data is already in lat/lon format from the database
+    const lat = parseFloat(y);
+    const lon = parseFloat(x);
+    
+    // Validate
+    if (isNaN(lat) || isNaN(lon)) {
+      return null;
     }
-
-    // Convert from State Plane Florida East (US Survey Feet) to lat/lon
-    const [lon, lat] = proj4(EPSG_2236, EPSG_4326, [parseFloat(x), parseFloat(y)]);
-    return [lat, lon];
+    
+    return [lat, lon]; // [lat, lon]
   } catch (error) {
-    console.error('Projection error:', error, { x, y });
+    console.error('Coordinate error:', error, { x, y });
     return null;
   }
 }
