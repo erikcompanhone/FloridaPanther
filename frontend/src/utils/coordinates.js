@@ -4,10 +4,12 @@ import proj4 from 'proj4';
  * Coordinate projection utilities for converting between coordinate systems
  */
 
-// Define projections (if needed - your data might already be in lat/lon)
-// Most Leaflet maps use EPSG:4326 (WGS84) which is standard lat/lon
-const EPSG_4326 = 'EPSG:4326'; // Standard lat/lon
-const EPSG_3857 = 'EPSG:3857'; // Web Mercator (what OSM uses)
+// Define projections
+// Florida Panther data uses NAD83 / UTM Zone 17N (EPSG:26917)
+// or State Plane Florida East (EPSG:2881)
+const EPSG_4326 = 'EPSG:4326'; // Standard lat/lon (WGS84)
+const EPSG_26917 = '+proj=utm +zone=17 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'; // NAD83 UTM Zone 17N
+const EPSG_2881 = '+proj=tmerc +lat_0=24.33333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'; // State Plane Florida East
 
 /**
  * Check if coordinates are valid
@@ -27,8 +29,9 @@ export function isValidCoordinate(x, y) {
 }
 
 /**
- * Convert projected coordinates to lat/lon if needed
- * Your data appears to use Web Mercator (EPSG:3857) based on the large numbers
+ * Convert projected coordinates to lat/lon
+ * Florida Panther data uses State Plane Florida East (EPSG:2881)
+ * X values around 600,000-700,000, Y values around 200,000-300,000
  */
 export function projectToLatLon(x, y) {
   try {
@@ -37,8 +40,9 @@ export function projectToLatLon(x, y) {
       return [parseFloat(y), parseFloat(x)]; // [lat, lon]
     }
 
-    // Convert from Web Mercator to lat/lon
-    const [lon, lat] = proj4('EPSG:3857', 'EPSG:4326', [parseFloat(x), parseFloat(y)]);
+    // Convert from State Plane Florida East to lat/lon
+    // X is easting, Y is northing in meters
+    const [lon, lat] = proj4(EPSG_2881, EPSG_4326, [parseFloat(x), parseFloat(y)]);
     return [lat, lon];
   } catch (error) {
     console.error('Projection error:', error, { x, y });
