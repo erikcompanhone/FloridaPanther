@@ -5,11 +5,10 @@ import proj4 from 'proj4';
  */
 
 // Define projections
-// Florida Panther data uses NAD83 / UTM Zone 17N (EPSG:26917)
-// or State Plane Florida East (EPSG:2881)
+// Florida Panther data uses State Plane Florida East NAD83 in US Survey Feet (EPSG:2236)
+// X values around 600,000-700,000, Y values around 200,000-300,000
 const EPSG_4326 = 'EPSG:4326'; // Standard lat/lon (WGS84)
-const EPSG_26917 = '+proj=utm +zone=17 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'; // NAD83 UTM Zone 17N
-const EPSG_2881 = '+proj=tmerc +lat_0=24.33333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'; // State Plane Florida East
+const EPSG_2236 = '+proj=tmerc +lat_0=24.33333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016002 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs'; // State Plane Florida East (US Survey Feet)
 
 /**
  * Check if coordinates are valid
@@ -30,8 +29,8 @@ export function isValidCoordinate(x, y) {
 
 /**
  * Convert projected coordinates to lat/lon
- * Florida Panther data uses State Plane Florida East (EPSG:2881)
- * X values around 600,000-700,000, Y values around 200,000-300,000
+ * Florida Panther data uses State Plane Florida East in US Survey Feet (EPSG:2236)
+ * X values around 600,000-700,000 feet, Y values around 200,000-300,000 feet
  */
 export function projectToLatLon(x, y) {
   try {
@@ -40,9 +39,8 @@ export function projectToLatLon(x, y) {
       return [parseFloat(y), parseFloat(x)]; // [lat, lon]
     }
 
-    // Convert from State Plane Florida East to lat/lon
-    // X is easting, Y is northing in meters
-    const [lon, lat] = proj4(EPSG_2881, EPSG_4326, [parseFloat(x), parseFloat(y)]);
+    // Convert from State Plane Florida East (US Survey Feet) to lat/lon
+    const [lon, lat] = proj4(EPSG_2236, EPSG_4326, [parseFloat(x), parseFloat(y)]);
     return [lat, lon];
   } catch (error) {
     console.error('Projection error:', error, { x, y });
