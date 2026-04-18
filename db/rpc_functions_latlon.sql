@@ -6,6 +6,7 @@
 -- =============================================
 
 DROP FUNCTION IF EXISTS telemetry_query_1(text);
+DROP FUNCTION IF EXISTS telemetry_query_2(numeric, numeric, text);
 DROP FUNCTION IF EXISTS telemetry_query_2();
 DROP FUNCTION IF EXISTS telemetry_query_3();
 DROP FUNCTION IF EXISTS mortality_query_1(numeric, numeric, text, integer, integer);
@@ -43,8 +44,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Query 2: Observation count per year
-CREATE OR REPLACE FUNCTION telemetry_query_2()
+-- Query 2: Observation count per year, filtered by age range and sex
+CREATE OR REPLACE FUNCTION telemetry_query_2(min_age numeric, max_age numeric, sex_param text)
 RETURNS TABLE (
   year integer,
   observation_count bigint
@@ -52,10 +53,14 @@ RETURNS TABLE (
 BEGIN
   RETURN QUERY
   SELECT 
-    EXTRACT(YEAR FROM flgt_date)::integer as year,
+    EXTRACT(YEAR FROM t.flgt_date)::integer as year,
     COUNT(*) as observation_count
-  FROM telemetry
-  WHERE flgt_date IS NOT NULL
+  FROM telemetry t
+  JOIN panther p ON t.panther_id = p.panther_id
+  WHERE t.flgt_date IS NOT NULL
+    AND p.sex = sex_param
+    AND p.age >= min_age
+    AND p.age <= max_age
   GROUP BY year
   ORDER BY year;
 END;
